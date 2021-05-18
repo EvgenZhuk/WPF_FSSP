@@ -59,9 +59,38 @@ namespace WPF_FSSP
                 dataGrid1.ItemsSource = Query;
 
 
-                //SELECT * FROM visitors JOIN court_objects on court_objects.id = visitors.court_object_id
+                //SELECT visitors.id, visitors.first_name , visitors.court_object_id, court_objects.address FROM visitors JOIN court_objects on court_objects.id = visitors.court_object_id
             }
 
+        }
+    }
+
+    public class ForView
+    {
+        public int id { get; set; }
+        public string first_name { get; set; }
+        public int court_object_id { get; set; }
+        public string address { get; set; }
+    }
+
+
+    public class ApplicationContext2 : DbContext
+    {
+        public DbSet<Visitor> Visitors { get; set; }
+        public DbSet<CourtObject> CourtObjects { get; set; }
+        public DbSet<ForView> ForViews { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ForView>((pc =>
+            {
+                pc.HasNoKey();
+                pc.ToView("View_ForViews");
+            }));
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseNpgsql("Host=172.17.75.4;Port=5432;Database=ums;Username=postgres;Password=postgres");
         }
     }
 }
